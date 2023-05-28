@@ -26,41 +26,41 @@ def setUp():
     driver.implicitly_wait(30)
 
 def Login():
-    driver.find_element_by_xpath("//*[@class='btn-signin item d-none d-lg-inline-block']").click()
+    driver.find_element("xpath", "//*[@class='btn-signin item d-none d-lg-inline-block']").click()
     sleep(1)
-    username = driver.find_element_by_id("username")
+    username = driver.find_element("name", "username")
     username.send_keys(email)
-    pwd = driver.find_element_by_id("password")
+    pwd = driver.find_element("name", "password")
     pwd.send_keys(password)
-    driver.find_element_by_xpath("//button[@class='btn-red btn-signin']").click()
+    driver.find_element("xpath", "//button[@class='btn-red btn-signin']").click()
     sleep(2)
     driver.implicitly_wait(50)
     cur_url=driver.current_url
     while cur_url == base_url:
-        driver.find_element_by_partial_link_text(f"{concert}").click()
+        driver.find_element('partial_link_text', f"{concert}").click()
         driver.implicitly_wait(30)
         cur_url=driver.current_url
     driver.implicitly_wait(30)
 
 def SelectShow():
-    row=len(driver.find_elements_by_xpath("//div[@class='box-event-list']/div[2]/div"))
+    row=len(driver.find_elements('xpath', "//div[@class='box-event-list']/div[2]/div"))
     #select round
-    driver.find_element_by_xpath(f"//div[@class='box-event-list']/div[2]/div[{show}]/div[2]/span[1]/a[1]").click()
+    driver.find_element("xpath", f"//div[@class='box-event-list']/div[2]/div[{show}]/div[2]/span[1]/a[1]").click()
     driver.implicitly_wait(30)
         
 
-    selected=driver.find_element_by_xpath(f"//*[@id='rdId']/option[1]").text
+    selected=driver.find_element("xpath", f"//*[@id='rdId']/option[1]").text
     # if after click and round is not selected
     if  selected=="เลือกรอบการแสดง / Select round":
-        driver.find_element_by_id("rdId").click()
+        driver.find_element("id", "rdId").click()
         driver.implicitly_wait(30)
-        driver.find_element_by_xpath(f"//*[@div='select-date fix-me']/option[{show+1}]").click()
+        driver.find_element("xpath", f"//*[@div='select-date fix-me']/option[{show+1}]").click()
         driver.implicitly_wait(30)
 
 
 def SelectZone(zone=zone):    
     global zone_list
-    list_zone=driver.find_elements_by_xpath(f"//*[@name='uMap2Map']/area")
+    list_zone=driver.find_elements('xpath', f"//*[@name='uMap2Map']/area")
     row=zone_list=len(list_zone)
     index=0
     cur_url=nextUrl=driver.current_url
@@ -71,7 +71,7 @@ def SelectZone(zone=zone):
             index=i
             break
     while cur_url == nextUrl:
-        driver.find_element_by_xpath(f"//*[@name='uMap2Map']/area[{index}]").click()
+        driver.find_element("xpath", f"//*[@name='uMap2Map']/area[{index}]").click()
         driver.implicitly_wait(30)
         nextUrl=driver.current_url
 
@@ -87,16 +87,16 @@ def find(msg,link):
 
 def SelectSeat(number=seat):
     global count
-    row=len(driver.find_elements_by_xpath("//*[@id='tableseats']/tbody[1]/tr"))
+    row=len(driver.find_elements('xpath', "//*[@id='tableseats']/tbody[1]/tr"))
     for i in range(1,row+1):
-        column=len(driver.find_elements_by_xpath(f"//*[@id='tableseats']/tbody[1]/tr[{i}]/td"))
+        column=len(driver.find_elements('xpath', f"//*[@id='tableseats']/tbody[1]/tr[{i}]/td"))
         for j in range(2,column+1):
-            text=driver.find_element_by_xpath(f"//*[@id='tableseats']/tbody[1]/tr[{i}]/td[{j}]").text
-            nrow=driver.find_element_by_xpath(f"//*[@id='tableseats']/tbody[1]/tr[{i}]/td[{j}]").get_attribute("title")
+            text=driver.find_element("xpath", f"//*[@id='tableseats']/tbody[1]/tr[{i}]/td[{j}]").text
+            nrow=driver.find_element("xpath", f"//*[@id='tableseats']/tbody[1]/tr[{i}]/td[{j}]").get_attribute("title")
             if text==" ":
                 print(f"seats:{nrow} not available")
             if text!=" " and count<number and text!="":
-                driver.find_element_by_xpath(f"//*[@id='tableseats']/tbody[1]/tr[{i}]/td[{j}]").click()
+                driver.find_element("xpath", f"//*[@id='tableseats']/tbody[1]/tr[{i}]/td[{j}]").click()
                 count+=1
             if count==number:
                 break
@@ -109,13 +109,13 @@ def SelectSeat(number=seat):
 def go_to_next_zone():
     global next_zone_index
     while next_zone_index<=zone_list:
-        driver.find_element_by_partial_link_text("ย้อนกลับ / Back").click()
+        driver.find_element('partial_link_text', "ย้อนกลับ / Back").click()
         driver.implicitly_wait(40)
-        driver.find_element_by_partial_link_text("ที่นั่งว่าง / Seats Available").click()
+        driver.find_element('partial_link_text', "ที่นั่งว่าง / Seats Available").click()
         driver.implicitly_wait(30)
         for j in range(2,zone_list+1):
-            amount=driver.find_element_by_xpath(f"//*[@class='container-popup']/table[1]/tbody[1]/tr[{j}]/td[2]").text
-            i=driver.find_element_by_xpath(f"//*[@class='container-popup']/table[1]/tbody[1]/tr[{j}]/td[1]").text
+            amount=driver.find_element("xpath", f"//*[@class='container-popup']/table[1]/tbody[1]/tr[{j}]/td[2]").text
+            i=driver.find_element("xpath", f"//*[@class='container-popup']/table[1]/tbody[1]/tr[{j}]/td[1]").text
             if amount!="0" or amount=="Available":
                 SelectZone(i)
                 SelectSeat()
@@ -128,9 +128,9 @@ def go_to_next_zone():
     
 
 def confirm_ticketprotect():
-    driver.find_element_by_partial_link_text("ยืนยันที่นั่ง / Book Now").click()
+    driver.find_element('partial_link_text', "ยืนยันที่นั่ง / Book Now").click()
     driver.implicitly_wait(50)
-    driver.find_element_by_partial_link_text("Continue").click()
+    driver.find_element('partial_link_text', "Continue").click()
     driver.implicitly_wait(40)
         
 
